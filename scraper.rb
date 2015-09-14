@@ -1,19 +1,27 @@
 # This is a template for a Ruby scraper on morph.io (https://morph.io)
 # including some code snippets below that you should find helpful
 
-# require 'scraperwiki'
-# require 'mechanize'
+require 'scraperwiki'
+require 'mechanize'
 #
-# agent = Mechanize.new
+agent = Mechanize.new
 #
 # # Read in a page
-# page = agent.get("http://foo.com")
+page = agent.get('http://web1.ncaa.org/stats/StatsSrv/pdf/rankings?statSeq=21&div=11&sportCode=MFB&rptType=HTML&doWhat=showrankings')
 #
 # # Find somehing on the page using css selectors
-# p page.at('div.content')
+page.search('//tr[position()>1]').each do |row|
+  name = row.search('td[2]').text.strip # Name
+  g = row.search('td[3]').text.strip # G
+  yds = row.search('td[6]').text.strip # YDS
+
+  next if name.to_s == ''
+
 #
 # # Write out to the sqlite database using scraperwiki library
-# ScraperWiki.save_sqlite(["name"], {"name" => "susan", "occupation" => "software developer"})
+  pp ScraperWiki.save_sqlite([:name], {:name => name, :g => g, :yds => yds})
+
+end
 #
 # # An arbitrary query against the database
 # ScraperWiki.select("* from data where 'name'='peter'")
